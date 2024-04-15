@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+body {
+  background-color: #004D40;
+  color: #FFFFE0;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+}
+    .options {
+      list-style-type: none;
+    }
+
+    .question {
+	 
+      font-weight: bold;
+	  text-indent: -1.5em;	  /* 調整此值以控制凸排的大小 */
+	  padding-left: 1.5em;
+	  	  	  margin-bottom: 3px;
+
+    }
+
+    .result {
+      //margin-top: 50px;
+	  	  margin-bottom: 1em;
+
+    }
+
+    #incorrect-questions {
+      margin-top: 20px;
+    }
+
+    #scroll-to-top{
+	  position: fixed;
+      top: 60px;
+      right: 20px;
+      background-color: #3498db;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+	
+	}
+    #scroll-to-bottom {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #3498db;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+	#show-answers-container {
+	  position: fixed;
+	  top: 10px;
+	  right: 20px;
+	  background-color: #3498db;
+	  color: white;
+	  padding: 10px;
+	  border: none;
+	  border-radius: 5px;
+	  cursor: pointer;
+	}
+
+	#showAnswersCheckbox {
+	  margin-right: 5px;
+	}
+  </style>
+  <title>SAP test</title>
+</head>
+<body>
+<div id="show-answers-container">
+  <label for="showAnswersCheckbox">
+    <input type="checkbox" id="showAnswersCheckbox" onchange="toggleAnswers()">
+    <span id="checkboxLabelContent">顯示答案</span>
+  </label>
+</div>
+<!--<label for="showAnswersCheckbox">
+  <input type="checkbox" id="showAnswersCheckbox" onchange="toggleAnswers()">
+  <span id="checkboxLabelContent">顯示答案</span>
+</label>-->
+<div id="quiz-container"></div>
+<button id="scroll-to-top" onclick="scrollToTop()">回到最頂部</button>
+<button id="scroll-to-bottom" onclick="scrollToBoChiaoHu#7777ttom()">跳至最底部</button>
+
+  <script>
+  
+	function scrollToTop() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  }
+
+  function scrollToBottom() {
+    window.scrollTo(0, document.body.scrollHeight);
+  }
+    var questionsData = [
+		"B,在SAP S/4HANA平台中，針對內部部署(On-Premise)的描述那些是正確的？<br>1.SAP提供系統維運(SAPprovidessystemandcontrolsmaintenance)<br>2.用戶自行管理資料(Privatelycontrolleddata)<br>3.每季自動版本更新(Automaticquarterlyinnovationupgrades)<br>4.較少的更新周期(Fewerreleasecycles),(A)23,(B)24,(C)12,(D)14。",
+		"A,在SAPERP的版本演化，若依時序排列，應該是？<br>1.R/2<br>2.ERPECC<br>3.S/4HANA<br>4.R/3,(A)1423,(B)4123,(C)4321,(D)1234。",
+		"C,在SAPERP的操作中，若忘記供應商建檔(CreateaVendor)的功能表位置，可利用那個T-CODE找出來？,(A)SAP_SEARCH_MENU,(B)SEARCH_MENU_SAP,(C)SEARCH_SAP_MENU,(D)SAP_MENU_SEARCH。",
+		"A,在SAP S/4HANA開發應用程式，必須具備何種關鍵IT設備？,(A)大量的記憶體(Largememory),(B)移動裝置(Mobiledevices),(C)快速的硬碟(Fastharddisk),(D)快速的無線網路(Fastwirelessnetwork)。",
+		"D,在SAPERP的資料型態中(DataTypes)，何者不屬於主數據(MasterData)？,(A)工作中心(WorkCenter),(B)固定資產(Asset),(C)會計科目(GeneralLedgeraccounts),(D)產品別(Division)。",
+		"A,在SAPERP的資料型態中(DataTypes)，銷售通路(DistributionChannel)屬於那一種？,(A)組織架構(OrganizationalData),(B)主數據(MasterData),(C)交易數據(TransactionData),(D)計畫訂單(PlannedOrder)。",
+		"C,在SAPERP的資料型態中(DataTypes)，報價單(Quotation)屬於那一種？,(A)組織架構(OrganizationalData),(B)主數據(MasterData),(C)交易數據(TransactionData),(D)計畫訂單(PlannedOrder)。",
+		"B,在SAPERP的操作畫面，各種語言介面，若要選擇繁體中文，應該選擇？,(A)TW,(B)ZF,(C)ZH,(D)CN。",
+		"C,SAP S/4HANA版本，能與許多雲端應用程式無縫整合，但不包含下那一項？,(A)SAPAriba,(B)SAPConcur,(C)Linkedln,(D)SAPFieldglass。",
+		"A,在SAP S/4HANA平台中，提供許多的模組，其中與人資相關的模組是？,(A)HCM,(B)EAM,(C)CS,(D)PS。",
+		"A,SAP S/4HANA版本，能與許多雲端應用程式無縫整合，但不包含下那一項？,(A)NetSuite,(B)SAPAriba,(C)SAPConcur,(D)SAPHybris。",
+		"B,為何在SAP S/4HANA版本，許多應用程式(applicationcode)必須重寫(re-written)？,(A)因為由ABAP代碼無法在S/4HANA平台使用,(B)因為要讓確保在S/4HANA的效能得以發揮,(C)因為S/4HANA只能用JAVA開發,(D)因為S/4HANA架構比較複雜。",
+		"D,何者不是組織數據(OrganizationalData),(A)公司代碼,(B)銷售組織,(C)銷售通路,(D)訂單。",
+		"D,請由上到下排列出組織架構<br>(1)公司代碼(Companycode)<br>(2)用戶端(Client)<br>(3)產品別(Division)<br>(4)銷售通路(Distributionhannel)<br>(5)銷售組織(Salesorganization),(A)12453,(B)12543,(C)21453,(D)21543。",
+		"D,SAP S/4HANA的雲端產品中，何者主要是用來提供與銷售市場相關的整合解決方案,(A)ARIBA,(B)FIELDGLASS,(C)CONCUR,(D)HYBRIS。",
+		"C,何者不是SAP S/4HANA本地端(On-Premise)的特性,(A)自行佈署控管和維護,(B)較少更新頻率,(C)主機硬體建置在公司外部,(D)能私自控制數據。",
+		"A,針對SAP S/4HANA的描述何者為非,(A)採用第三正規化,(B)單一數據來源,(C)無須儲存冗餘的資料,(D)資料匯集和分析處理速度加快。",
+		"A,在SAPFIORI介面中，何者是通過導覽方式去存取任務，如：創建、修改或展式流程等,(A)交易類Apps,(B)應用類Apps,(C)報表類Apps,(D)系統類Apps。",
+		"D,在Logistics下查詢不到哪個模組,(A)SD模組,(B)MM模組,(C)PP模組,(D)FI模組。",
+		"D,關於T-Code的使用描述何者為非,(A)/O加上某T-Code可以直接開啟該視窗功能,(B)/N加上某T-Code會先關閉原視窗後再開啟,(C)/NEX為強制退出系統,(D)在某視窗功能開啟的狀態下，可以直接輸入T-Code。",
+		"C,何者無法在SAPGUIOptions上設定,(A)設定字體大小,(B)設定字型,(C)設定小數點格式,(D)設定下拉式選單的排序。",
+		"A,何者為買賣業主要的物料分類方式,(A)貿易品,(B)原物料,(C)半成品,(D)成品。",
+		"A,何者為SAP組織架構中的最高層級，通常整個組織只會有一個,(A)用戶端(Client),(B)公司代碼(Companycode),(C)公司群組(CompanyGroup),(D)營運考慮(OperatingConcern)。",
+		"A,在SAP組織架構中，何者為用來負責銷售某些產品或服務的組織單位,(A)銷售組織(Salesorganization),(B)銷售通路(Saleschannel),(C)產品別(Division),(D)銷售區域(Salesarea)。",
+		"(D),客戶產品價格條件(VK11)，主要是建立那些內容，下列何者為非？,(A)價格(Price),(B)折扣(Discount),(C)運費(Freight),(D)貿易條件(TradeTerm)。",
+		"(C),組成客戶產品價格條件(VK11)有四個要素，不包含那一個？,(A)客戶(Customer),(B)產品(Material),(C)產品別(Division),(D)銷售組織(SaleOrg.)。",
+		"(A),檢貨作業時，要填入倉庫號碼，而此倉庫號碼(warehousenumber)是由何者組成？,(A)工廠(plant)與儲位(storagelocation),(B)儲位(storagelocation),(C)工廠(plant),(D)銷售組織(SaleOrg.)。",
+		"(C),銷售組織(salesorg.)與工廠(Plant)的關係是？,(A)多對一,(B)一對多,(C)不必設定,(D)多對多。",
+		"(C),在配銷模組中客戶訂單(salesorder VA01)的主數據有許多，但不包含下列那一項？,(A)客戶(Customer),(B)物料(Material),(C)銷售組織(SaleOrg.),(D)輸出(Output)。",
+		"(B),在配銷模組(SD)中，那一個步驟會與獲利分析(Profitablilityanalysis)整合？,(A)建立出貨通知單(Createanoutbounddelivery),(B)建立銷貨發票(Generatingainvoice),(C)建立銷貨訂單(GeneratingaSalesOrder),(D)建立庫存移轉單(CreateaTransferOrder)。",
+		"(A),在配銷模組(SD)中，建立商業夥伴時(Businesspartner)，必須先選擇何者？,(A)商業夥伴角色(Businesspartnerrole),(B)商業夥伴類型(Businesspartnertype),(C)夥伴功能(partnerfunction),(D)科目群組(Accountgroup)。",
+		"(A),在配銷模組(SD)流程中，銷售區域(Salesarea)不包含下列何者？,(A)工廠(Plant),(B)銷售通路(Distributionchannel),(C)銷售組織(SalesOrganization),(D)產品別(Division)。",
+		"(B),在配銷模組(SD)流程中，下列何者是銷售區域(Salesarea)的一部份？,(A)工廠(Plant),(B)銷售通路(Distributionchannel),(C)公司代碼(CompanyCode),(D)儲存地點(StorageLocation)。",
+		"(D),在配銷模組(SD)流程中，當發貨時(PostGoodsIssue)會影響一連串的動作，請問不包含下列那一項？,(A)產生財會憑証(anaccountingjournalentryiscreate),(B)庫存數量更新(Inventoryquantitiesareupdated),(C)待開發票清單更新(thebillingduelistisupdated),(D)產生銷項發票(aninvoiceiscreated)。",
+		"(B),在配銷模組(SD)流程中，銷售組織(SalesOrganization)與公司代碼(CompanyCode)的關係是？,(A)一對多,(B)多對一,(C)一對一,(D)多對多。",
+		"(D),下列何者不是配銷模組(SD)的主數據？,(A)客戶主數據(CustomerMasterData),(B)物料主數據(MaterialMasterData),(C)客戶價格條件主數據(ConditionMasterData),(D)物料類型(MaterialTypeMasterData)。",
+		"(A),配銷模組(SD)中，客戶主數據包含三視圖，不包括下列那一項？,(A)工廠資料(PlantData),(B)一般性資料(GeneralData),(C)集團層級資料(ClientData),(D)公司代碼資料(CompanyCodeData)。",
+		"(B),在配銷模組(SD)中，客戶價格條件(Conditionmasterdata)會包含許多事項，但不包含？,(A)重量折扣,(B)貿易條件(Tradeterms),(C)數量折扣,(D)淨額折扣。",
+		"(A),在配銷模組(SD)流程中，那些屬於售前活動(Pre-salesActivities)？,(A)建立詢價單(CreateaInquiries),(B)客戶付款(ReceiptofCustomerPayment),(C)檢查庫存可用量(CheckAvailability),(D)開立發票(CreateaCustomerInvoice)Issue)。",
+		"(B),在配銷模組(SD)流程中，銷貨訂單(salesorder)，是由三個部份所組成，而產品資訊是建立在那個部份？,(A)表頭(Header),(B)表身(LineItems),(C)排程(ScheduleLines),(D)表尾(Footer)。",
+		"(A),在配銷模組(SD)流程中，開立客戶發票的模式中(BillingMethods)，若多張訂單(SalesOrder)開立一張發票，稱為何種開立方式？,(A)集體開立(CollectiveInvoicing),(B)分割開立(SplitInvoicing),(C)依出貨單開立(DeliveryBasedInvoicing),(D)完全開立(CompleteInvoicing)。",
+		"(B),在配銷模組中(SD)，組織層次中的工廠(Plant)，可以有多個功用，但不可能代表以下何者,(A)製造工廠(manufacturingfacility),(B)儲存格(StorageBin),(C)倉庫(Warehouse),(D)物流中心(DistrubutionCenter)。",
+		"(C),在配銷模組(SD)流程中，開立發票(CreateaCustomerInvoice)，會產生那一項財會憑証(AccountingDocument)？,(A)借：銀行存款(Bank)　貸：應收帳款(A/R),(B)借：銷貨成本(COGS)　貸：存貨(Inventory),(C)借：應收帳款(A/R)　貸：銷貨收入(SalesIncome),(D)借：應收帳款(A/R)　貸：存貨(Inventory)。",
+		"(A),在物料文件中，移動類型101主要的是在描述何種狀況,(A)採購單(Purchaseorder)的收貨(Receipt),(B)採購單(Purchaseorder)的退回(Return),(C)客戶訂單(Salesorder)的發貨(Issue),(D)客戶訂單(Salesorder)的退回(Return)。",
+		"(C),當採購收貨時(GoodsReceiptforPurchaseOrder)，對系統而言會發生一連串的影響，請問不包含下列那個動作？,(A)產生物料帳憑証(MaterialDocumentisCreated),(B)產生財會憑証(AccountingDocumentisCreated),(C)產生管會憑証(ControllingDocumentisCreated),(D)更新庫存數量(StockQuantitiesareUpdated)。",
+		"(D),建立採購單(PurchaseOrder)的方式有很多種，下列描述何者正確？,(A)複製採購單(ReferenceaPurchaseOrder),(B)直接新增(WithoutReference),(C)複製報價單(ReferenceaRFQ/Quotation),(D)以上皆是。",
+		"(C),在採購循環中(Purchasingprocess)，下列動作那一步驟是與財會(FI)模組相關,(A)建立採購單(CreatePurchaseOrder),(B)建立供應商(CreateNewVendor),(C)收到供應商的發票(CreateInvoiceReceiptfromVendor),(D)評估報價單的的價格(EvaluateQuotationsonPrice)。",
+		"(C),當採購收貨時(GoodsReceiptforPurchaseOrder)，對資產負債表會產生變化，請問下列何者正確？,(A)借：存貨(Inventory)貸：應付帳款(AccountPayable),(B)借：應付帳款(AccountPayable)貸：存貨(Inventory(),(C)借：存貨(Inventory()貸：預計應付帳款(GR/IR),(D)借：預計應付帳款(GR/IR)貸：存貨(Inventory()。",
+		"(D),當收到供應商發票時(InvoiceReceiptfromVendor)，對資產負債表會產生變化，請問下列何者正確？,(A)借：存貨(Inventory()貸：應付帳款(AccountPayable),(B)借：應付帳款(AccountPayable)貸：存貨(Inventory(),(C)借：應付帳款(AccountPayable)貸：預計應付帳款(GR/IR),(D)借：預計應付帳款(GR/IR)貸：應付帳款(AccountPayable)。",
+		"(C),供應商(Vendor)主數據會被那個模組使用到？,(A)財會模組(FI),(B)物料模組(MM),(C)財會模組(FI)與物料模組(MM),(D)配銷模組(SD)。",
+		"(D),物料(Material)主數據會被那個模組使用到？,(A)製造模組(PP),(B)物料模組(MM),(C)配銷模組(SD),(D)以上皆是。",
+		"(C),在S/4HANA之中，物料模組會與雲端那個模組緊密結合？,(A)SUCESSFACTORS,(B)FIELDGLASS,(C)ARIBA,(D)CONCUR。",
+		"(A),物料帳(MaterialLedger)，可以推出物料的實際成本與九大差異，在S/4HANA之中如何啟動此模組？,(A)已自動啟用,(B)要請顧問公司啟用,(C)要請SAP原廠啟用,(D)由用戶自行選擇是否啟用。",
+		"(A),針對採購組織(PurchasingOrganization)與採購群組的描述，何者是錯誤的？,(A)與供應商議價是屬於採購群組的工作,(B)一個企業可以有多個採購組織,(C)採購群組不一定是公司內部的實體單位,(D)評估供應商是採購組織的工作。",
+		"(D),採購模組(MM)，不包含那些主數據(MasterData)？,(A)供應商主數據(Vendor),(B)物料主數據(Material),(C)採購訊息記錄(PurchasingInformationRecord),(D)物料類型(MaterialType)。",
+		"(C),下列那個物料類型是在屬於製成品,(A)ROH,(B)HALB,(C)FERT,(D)HALB。",
+		"(D),以收貨為基礎的發票驗證(Goods-receipt-basedInvoiceVerification)，系統代表的意義為何,(A)物料多次送達，但只有一次發票驗證，且以採購單的數量為驗證依據,(B)物料分幾次送達，就有幾次發票驗證，且以採購單數量為驗證依據,(C)物料一次送達，但有多次發票驗證，且以採購單的數量為驗證依據,(D)物料分幾次送達，就有幾次發票驗證，且以物料送達數量為驗證依據。",
+		"(B),以採購單為基礎的發票驗證(Purchase-order-basedInvoiceVerification)，系統代表的意義為何,(A)物料分幾次送達，就有幾次發票驗證，且以物料送達數量為驗證依據,(B)物料多次送達，但只有一次發票驗證，且以採購單的數量為驗證依據,(C)物料一次送達，但有多次發票驗證，且以物料送達數量為驗證依據,(D)物料多次送達，但只有一次發票驗證，且以物料送達數量為驗證依據。",
+		"(C),當採購單收貨時(MIGO)，下列敘述何者錯誤？,(A)貨物已正確送達,(B)預付應付帳款已產生(GR/IR),(C)貨物狀態都是可使用(unrestricteduse),(D)採購單的狀態會更新。",
+		"(D),當建立採購單時，如果有填成本中心(costcenter)，則下列何時正確？,(A)料號要填成本中心,(B)料號不可以填,(C)料號一定要填,(D)料號可填可不填。",
+		"(D),採購模組不會和那個模組產生直接的關聯？,(A)QM品檢模組,(B)WM倉儲管理,(C)FI財務模組,(D)SD配銷模組。",
+		"(B),採立採購單時，何時要指定成本物件(COSTOBJECT，例如成本中心)？,(A)購買物料時(Material),(B)購物服務時(service),(C)依主管的要求,(D)不可以指定。",
+		"(A),在銷售與配銷模組中，何者為銷售區域,(A)銷售組織、銷售通路、產品別,(B)銷售辦公室、銷售群組、銷售人員,(C)出貨點、裝載點,(D)以上皆非。",
+		"(D),何者不是銷售與配銷模組中的主數據,(A)客戶主數據,(B)物料主數據,(C)客戶訂價條件,(D)供應商主數據。",
+		"(D),何者不是客戶主數據的資料結構,(A)一般資料,(B)公司代碼資料,(C)銷售區域資料,(D)出貨組織資料。",
+		"(D),何者不是銷售與配銷模組中物料主數據的主要角度(View),(A)基本資料,(B)銷售資料,(C)儲存資料,(D)排程資料。",
+		"(D),在銷售與配銷模組中，何者不是客戶價格條件內容,(A)價格、折扣,(B)附加費,(C)運費,(D)進項稅。",
+		"(B),請選出正確的銷售流程<br>(1)售前活動<br>(2)可用量查核<br>(3)建立訂單<br>(4)出貨<br>(5)撿貨<br>(6)包裝<br>(7)收款<br>(8)開立發票,(A)12356487,(B)13256487,(C)13256478,(D)21356478。",
+		"(C),在銷售與配銷模組中，關於單據的描述何者為非,(A)詢價單是客戶是針對特定產品詢問價格,(B)報價單是針對客戶詢價的產品進行報價,(C)客戶訂單建立必須經過詢報價單,(D)客戶訂單具有法律效力。",
+		"(B),何者不是訂單的組成架構,(A)單頭(Head),(B)單尾(Bottom),(C)列項目(Lineitem),(D)計畫列(ScheduleLine)。",
+		"(C),在銷售與配銷模組中，關於單據設定描述，何者為是,(A)列項目(Lineitem)可以設定整張訂單的折扣,(B)單頭(Head)可以設定單一商品的折扣,(C)計畫列(ScheduleLine)可以設定分批出貨,(D)報價單裡可以查詢庫存。",
+		"(C),請選出正確交貨排程<br>(1)可用量檢查<br>(2)運輸規劃<br>(3)建立訂單<br>(4)裝載<br>(5)出貨,(A)13245,(B)13425,(C)31245,(D)32145。",
+		"(C),關於由客戶交期倒推(BackwardScheduling)交貨排程的描述，何者為非,(A)裝載時間是出貨期限到裝載期限的時間間距,(B)運送時間是客戶交貨期限到出貨期限的時間間距,(C)運輸規劃時間是裝載期限到可用量檢查期限的時間間距,(D)運輸規劃時間可以和撿貨/包裝時間同時進行。",
+		"(D),從銷售與配銷模組中，哪個步驟非與運輸規劃(ShippingandTransportation)相關,(A)建立交貨流程,(B)撿貨,(C)出貨,(D)開立客戶發票。",
+		"(C),在交貨文件產生方式中，為了因應客戶不同交期，將一張訂單分為多筆交貨文件，此為,(A)訂單合併(OrderCombination),(B)訂單分割(Orderseparation),(C)局部交貨(Partialdelivery),(D)完全交貨(Completedelivery)。",
+		"(A),在交貨文件產生方式中，將多筆訂單整合為一筆交貨文件，此為,(A)訂單合併(OrderCombination),(B)訂單分割(Orderseparation),(C)局部交貨(Partialdelivery),(D)隨機出貨(Randondelivery)。",
+		"(A),下列何者是出貨給客戶時所產生的分錄,(A)借方：銷售成本、貸方：存貨,(B)借方：應收帳款、貸方：銷售收入,(C)借方：銀行存款、貸方：應付帳款,(D)借方：應付帳款、貸方：銀行存款。",
+		"(B),在發票開立種類中，一張訂單只開立一筆發票，此為,(A)以詢價單為基礎發票(Quotation-basedinvoicing),(B)以訂單為基礎發票(Order-basedinvoicing),(C)匯集發票(Collectiveinvoicing),(D)分離發票(Splitinvoicing)。",
+		"(C),請問如何將客戶與聯繫人兩者關連起來,(A)在客戶主數據添加聯繫人,(B)在聯繫人主數據添加客戶,(C)透過銷售夥伴(BusinessPartner)建立,(D)以上皆是。",
+		"(A),從銷售與配銷模組中，哪個步驟不會產生會計傳票,(A)建立訂單,(B)出貨,(C)開立客戶發票,(D)收款。",
+		"(C),從銷售與配銷模組中，哪個步驟會與物料管理模組(MM)連結起來,(A)建立客戶主數據,(B)建立訂單,(C)查詢庫存,(D)開立客戶發票。",
+		"(D),在物料管理模組中，關於採購組織架構的描述何者為非,(A)採購組織可以有多個採購群組,(B)採購群組可以有很多採購人員,(C)採購群組可以是外包單位,(D)採購群組與採購組織必須設定關聯。",
+		"(A),在物料管理模組中，關於採購組織架構的描述何者為非,(A)多個公司可以共同一個採購組織,(B)多個公司可以共同一個採購群組,(C)採購組織是負責議價,(D)採購群組是負責執行採購。",
+		"(D),何者不是供應商主數據的資料結構,(A)一般資料,(B)公司代碼資料,(C)採購組織資料,(D)出貨組織資料。",
+		"(D),何者不是物料管理模組中物料主數據的主要角度(View),(A)基本資料,(B)採購資料,(C)會計資料,(D)MRP資料。",
+		"(D),何者是記載於採購訊息記錄(PurchasingInformationRecord)的內容,(A)採購價格條件,(B)最近採購單,(C)供應商評選,(D)以上皆是。",
+		"(A),何者不是物料管理模組中的主數據,(A)客戶主數據,(B)物料主數據,(C)採購訊息記錄,(D)供應商主數據。",
+		"(A),在物料管理模組中，何者不是供應商主要選擇來源,(A)客戶推薦,(B)集團內部採購,(C)供應商清冊,(D)採購協議框架。",
+		"(B),請選出正確的內部採購流程<br>(1)建立請購單<br>(2)建立採購單<br>(3)建立詢價單<br>(4)維護報價單<br>(5)評估供應商(接受或拒絕),(A)12345,(B)13425,(C)34125,(D)51342。",
+		"(C),在物料管理模組中，關於單據的描述何者為非,(A)詢價單是針對特定產品向供應商詢問價格,(B)報價單是供應商對詢價的產品進行報價,(C)採購單建立必須先經請購單,(D)採購單具有法律效力。",
+		"(D),在物料管理模組中，關於評估供應商的准則何者為非,(A)可從價格標準評估,(B)可從數量標準評估,(C)可從交貨標準評估,(D)無法在評估標準設定分數權重。",
+		"(D),在物料管理模組中，何者不是採購單來源,(A)過去的採購單,(B)請購單,(C)詢價/報價單,(D)只能從其他單據拋轉。",
+		"(B),何者不是採購單的組成架構,(A)單頭(Head),(B)單尾(Bottom),(C)列項目(Lineitem),(D)計畫列(ScheduleLine)。",
+		"(D),在物料管理模組中，何者能設定分批交貨,(A)單頭(Head),(B)單尾(Bottom),(C)列項目(Lineitem),(D)計畫列(ScheduleLine)。",
+		"(B),下列何者非採購單的輸出格式,(A)傳真,(B)簡訊(SMS),(C)E-Mail,(D)電子數據交換(EDI)。",
+		"(D),在收到供應商的貨物後，會執行哪張單據的更新,(A)物料憑證,(B)會計憑證/傳票,(C)庫存數量,(D)以上皆是。",
+		"(B),在進項發票驗證類型中，何者描述為非,(A)採購單為基礎的發票驗證雖然物料多次送達，可以僅一次發票驗證,(B)收貨為基礎的發票驗證為無論物料分幾次送達，就只有一次發票驗證,(C)採購單為基礎的發票驗證，是以採購單數量為驗證依據,(D)收貨為基礎的發票驗證，是以物料送達數量為驗證依據。",
+		"(A),下列何者是收到供應商貨物時所產生的分錄,(A)借方：進貨、貸方：預計應付帳款(GR/IR),(B)借方：應收帳款、貸方：銷貨收入,(C)借方：預計應付帳款(GR/IR)、貸方：應付帳款,(D)借方：銀行存款、貸方：應收帳款。",
+		"(C),物料管理模組與哪個模組無關,(A)銷售與配銷模組,(B)倉儲管理模組,(C)企業資產管理模組,(D)品質管理模組。",
+		"(A),從物料管理模組中，哪個步驟不會產生會計傳票,(A)建立採單,(B)收貨,(C)收到進項發票,(D)付款。"
+
+    ];
+
+  var quizContainer = document.getElementById('quiz-container');
+  var optionsList = document.createElement('ul');
+  optionsList.className = 'options';
+  quizContainer.appendChild(optionsList);
+
+  var correctAnswers = []; // 用來存放所有題目的正確答案
+  var incorrectQuestions = []; // 用來存放錯誤的題目和正確答案
+
+  questionsData.forEach(function (q, index) {
+	var data = q.split(',');
+	var listItem = document.createElement('li');
+	var questionText = data[1];
+	var correctAnswer = (data[0] && data[0].match(/[A-Za-z]+/)) ? data[0].match(/[A-Za-z]+/)[0] : '';
+	correctAnswers.push(correctAnswer); // 添加到正確答案數組
+
+	listItem.innerHTML = `<div class="question">${index+1}.${questionText}</div>` +
+	  `<label><input type="radio" name="question${index}" value="${data[2]}"> ${data[2]}</label><br>` +
+	  `<label><input type="radio" name="question${index}" value="${data[3]}"> ${data[3]}</label><br>` +
+	  `<label><input type="radio" name="question${index}" value="${data[4]}"> ${data[4]}</label><br>` +
+	  `<label><input type="radio" name="question${index}" value="${data[5]}"> ${data[5]}</label><br>` +
+	  `<div class="result" id="result${index}"></div>`;
+
+	optionsList.appendChild(listItem);
+
+	var resultDiv = document.getElementById(`result${index}`);
+
+	listItem.addEventListener('change', function () {
+	  //resultDiv.innerHTML = ''; // 清空結果消息
+	});
+  });
+
+	var submitBtn = document.createElement('button');
+	submitBtn.id = 'submit-btn';
+	submitBtn.textContent = '提交答案';
+	submitBtn.onclick = checkAnswer;
+	submitBtn.style.position = 'fixed';
+	submitBtn.style.bottom = '10px'; // 距離底部的距離，你可以根據需要調整
+	submitBtn.style.right = '600px'; // 距離右側的距離，你可以根據需要調整
+	submitBtn.style.backgroundColor = '#4CAF50';
+	submitBtn.style.color = 'white';
+	submitBtn.style.padding = '10px';
+	submitBtn.style.border = 'none';
+	submitBtn.style.borderRadius = '5px';
+	submitBtn.style.cursor = 'pointer';
+	submitBtn.style.zIndex = '1'; // 確保按鈕在其他內容的上方
+	quizContainer.appendChild(submitBtn);
+	
+  var resultMessage = document.createElement('div');
+  resultMessage.id = 'result-message';
+  quizContainer.appendChild(resultMessage);
+
+  var incorrectQuestionsDiv = document.createElement('div');
+  incorrectQuestionsDiv.id = 'incorrect-questions';
+  quizContainer.appendChild(incorrectQuestionsDiv);
+
+  function checkAnswer() {
+	// 清空上一次的錯誤信息
+	incorrectQuestions = [];
+	incorrectQuestionsDiv.innerHTML = '';
+    var userAnswers = [];
+	var score = 0;
+	var nscore = 0;
+	var noanser = 0;
+    for (var i = 0; i < questionsData.length; i++) {
+      var inputs = document.querySelectorAll(`input[name="question${i}"]:checked`);
+      var resultDiv = document.getElementById(`result${i}`);
+
+      if (inputs.length === 0) {
+        // 如果未回答該問題，則將正確答案標記為未回答
+        resultDiv.innerHTML = `未回答，正確答案是 ${correctAnswers[i]}`;
+        resultDiv.style.color = 'black';
+		noanser ++;
+      } else {
+        var userAnswer = inputs[0].value.match(/[A-Za-z]+/)[0]; // 只保留括號內的英文字母
+        userAnswers.push(userAnswer);
+        if (userAnswer === correctAnswers[i]) {
+          resultDiv.innerHTML = '答對！';
+          resultDiv.style.color = 'green';
+		  score ++;
+        } else {
+          resultDiv.innerHTML = `答錯，正確答案是 ${correctAnswers[i]}`;
+          resultDiv.style.color = 'red';
+		  console.log("userAnswer:", userAnswer); // 添加這行
+		  console.log("correctAnswer:", correctAnswers[i]); // 添加這行
+          // 找到錯誤的題目並記錄
+		  nscore ++;
+          incorrectQuestions.push({
+		    index: i + 1, // 真實的題號（1、2、3、...）
+            question: questionsData[i],
+            correctAnswer: correctAnswers[i],
+            userAnswer: userAnswer
+          });
+        }
+      }
+    }
+
+	// 顯示錯誤的題目和正確答案
+	incorrectQuestionsDiv.innerHTML = '<h2>錯誤的題目和正確答案：</h2>';
+
+	for (var i = 0; i < incorrectQuestions.length; i++) {
+	  var questionDiv = document.createElement('div');
+	  var questionData = incorrectQuestions[i].question.split(',');
+	  var questionText = questionData[1];
+	  var options = questionData.slice(2); // 提取選項部分
+	  
+	  //console.log("options:",options)
+	  // 找到用戶選擇的選項的文本
+// 找到用戶選擇的選項的文本
+var userAnswerText = options.find(opt => opt.includes(`(${incorrectQuestions[i].userAnswer})`));
+//userAnswerText = userAnswerText.replace(/\(|\)/g, '');
+	  //console.log("options:",userAnswerText)
+questionDiv.innerHTML = `<p><strong>題號：</strong>${incorrectQuestions[i].index}</p>` +
+  `<p style="text-indent: -3em; padding-left: 3em;"><strong>題目：</strong>${questionText}</p>` +
+  `<p style="text-indent: -3em; padding-left: 3em;"><strong> 選項：</strong>` +
+  `<span >${options.join('<br>')}</span></p>` +  // 注意這行
+  `<p><strong>你的答案：</strong><span style="color: red;">${userAnswerText}</span></p>` +
+  `<p><strong>正確答案：</strong><span style="color: blue;">${incorrectQuestions[i].correctAnswer}</span></p>`;
+	  incorrectQuestionsDiv.appendChild(questionDiv);
+	}
+
+	var resultMessage = document.getElementById('result-message');
+	resultMessage.innerHTML = `答對${score}題<br>答錯${nscore}題<br>未回答${noanser}題`;
+  }
+
+  function calculateScore(userAnswers, correctAnswers) {
+    var score = 0;
+    for (var i = 0; i < userAnswers.length; i++) {
+	  if (userAnswers[i].match(/[A-Za-z]+/) === correctAnswers[i].match(/[A-Za-z]+/)) {
+        score++;
+      }
+    }
+    return score;
+  }
+  
+  function toggleAnswers() {
+    var showAnswers = showAnswersCheckbox.checked;
+
+    for (var i = 0; i < questionsData.length; i++) {
+      var resultDiv = document.getElementById(`result${i}`);
+
+      if (showAnswers) {
+        resultDiv.innerHTML = `正確答案是 ${correctAnswers[i]}`;
+        resultDiv.style.color = 'beige';
+      } else {
+        resultDiv.innerHTML = ''; // 清空結果消息
+      }
+    }
+  }
+</script>
+
+</body>
+</html>
